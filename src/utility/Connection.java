@@ -36,7 +36,6 @@ public class Connection {
             Scanner fileR = new Scanner(file);
             inputLog = fileR.nextLine();
             while(fileR.hasNextLine()){
-                
                 inputLog = fileR.nextLine();
                 int limit = inputLog.length() - inputLog.replace(",", "").length();
                 String[] word = inputLog.split(",",limit+1);
@@ -46,7 +45,7 @@ public class Connection {
             }
             fileR.close();
         } catch (Exception e) {
-            System.out.println(e);
+            System.out.println("No such file is named: " + fileName);
         }
 
         return this.model;
