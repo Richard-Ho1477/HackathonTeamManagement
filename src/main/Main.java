@@ -6,8 +6,7 @@ import repository.FacadeRep;
 
 public class Main {
     public static void main(String[] args){
-        int co = 0, filter = 0, join = 0;
-        String condition = "";
+        int co = 0;
         boolean call = true;
         Scanner sc = new Scanner(System.in);
         FacadeRep fr = new FacadeRep();
@@ -58,5 +57,6 @@ public class Main {
                     break;
             }
         }while(call);
+        sc.close();
     }
 }

@@ -3,6 +3,7 @@ package repository;
 import java.util.ArrayList;
 
 import models.Model;
+import models.User;
 import utility.Connection;
 
 public class TeamRepository implements Repository {
@@ -24,29 +25,81 @@ public class TeamRepository implements Repository {
     @Override
     public void show(String atribut, ArrayList<String> filter, boolean join, String table, String con) {
         Connection connection = Connection.getConnection();
+        ArrayList<Model> temp = connection.readFile(table);
+        ArrayList<Model> user = (ArrayList) temp.clone();
         ArrayList<Model> team = connection.readFile("team.csv");
-        if(join) {
-            ArrayList<Model> user = connection.readFile("user.csv");
-        }
+        int n = 0;
 
-        if(atribut.compareTo("name") == 0) {
-            if(filter.get(0).compareTo("=") == 0) {
-                for (Model t : team) {
-                    for(int i = 1; i<filter.size()-1; i++) {
-                        if(t.getNama().compareTo(filter.get(i))==0) {
-                            System.out.println(t.getNama());
+        
+        if(join) System.out.printf("| %-30s | %-7s | %-12s | %-40s |\n", "Nama Team", "Id Team", "Nim User", "Nama User");
+        else System.out.printf("| %-30s | %-7s |\n", "Nama Team", "Id Team");
+
+        if(filter.size()==0) {
+            for (Model t : team) {
+                if(join) {
+                    for (Model u : user) {
+                        if(u.getId()==t.getId()) {
+                            System.out.printf("| %-30s | %-7d | %-12s | %-40s |\n", t.getNama(), t.getId(), ((User) u).getNim(), u.getNama());
                         }
                     }
+                } else {
+                    System.out.printf("| %-30s | %-7d |\n", t.getNama(), t.getId());
                 }
-            } else if(filter.get(0).compareTo("!=") == 0) {
-                for (Model t : team) {
-                    for(int i = 1; i<filter.size()-1; i++) {
-                        if(t.getNama().compareTo(filter.get(i))!=0) {
-                            System.out.println(t.getNama());
+            }
+            return;
+        }
+
+        if(atribut.compareTo("name") == 0 || atribut.compareTo("nama") == 0) {
+            if(filter.get(0).compareTo("=") == 0) n = 1;
+            if(filter.get(0).compareTo("!=") == 0) n = 2;
+            if(n == 0) {
+                System.out.println("Operator yang dimasukkan salah, harap masukkan kembali");
+                return;
+            }
+            for (Model t : team) {
+                for(int i = 1; i<filter.size(); i++) {
+                    if((n == 1 && t.getNama().compareTo(filter.get(i))==0) || (n == 2 && t.getNama().compareTo(filter.get(i))!=0)) {
+                        if(join) {
+                            for (Model u : user) {
+                                if(u.getId()==t.getId()) {
+                                    System.out.printf("| %-30s | %-7d | %-12s | %-40s |\n", t.getNama(), t.getId(), ((User) u).getNim(), u.getNama());
+                                }
+                            }
+                        } else {
+                           System.out.printf("| %-30s | %-7d |\n", t.getNama(), t.getId());
                         }
                     }
                 }
             }
+        } else if(atribut.compareTo("id") == 0) {
+            if(filter.get(0).compareTo("=") == 0) n = 1;
+            if(filter.get(0).compareTo("!=") == 0) n = 2;
+            if(filter.get(0).compareTo("<") == 0) n = 3;
+            if(filter.get(0).compareTo(">") == 0) n = 4;
+            if(filter.get(0).compareTo("<=") == 0 || filter.get(0).compareTo("=<") == 0) n = 5;
+            if(filter.get(0).compareTo(">=") == 0 || filter.get(0).compareTo(">=") == 0) n = 6;
+            if(n == 0) {
+                System.out.println("Operator yang dimasukkan salah, harap masukkan kembali");
+                return;
+            }
+            for (Model t : team) {
+                for(int i = 1; i<filter.size(); i++) {
+                    if((n == 1 && t.getId() == Integer.valueOf(filter.get(i))) || (n == 2 && t.getId() != Integer.valueOf(filter.get(i))) || (n == 3 && t.getId() < Integer.valueOf(filter.get(i))) || (n == 4 && t.getId() > Integer.valueOf(filter.get(i))) || (n == 5 && t.getId() <= Integer.valueOf(filter.get(i))) || (n == 6 && t.getId() >= Integer.valueOf(filter.get(i)))) {
+                        if(join) {
+                            for (Model u : user) {
+                                if(u.getId()==t.getId()) {
+                                    System.out.printf("| %-30s | %-7d | %-12s | %-40s |\n", t.getNama(), t.getId(), ((User) u).getNim(), u.getNama());
+                                }
+                            }
+                        } else {
+                           System.out.printf("| %-30s | %-7d |\n", t.getNama(), t.getId());
+                        }
+                    }
+                }
+            }
+        } else {
+            System.out.println("Tidak ada atribut dalam tabel");
+            return;
         }
     }
 }
