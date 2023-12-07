@@ -54,7 +54,6 @@ public class FacadeRep {
             if(this.filter == 1 && word.length > 1 && this.condition.charAt(this.condition.length() - 1) != ';') break;
             else if(this.filter == 2 && !this.condition.contains(";")) break;
         }while(true);
-
         
         String atribut = "";
         ArrayList <String> filter = new ArrayList<>();
