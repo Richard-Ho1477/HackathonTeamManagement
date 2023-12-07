@@ -56,8 +56,21 @@ public class FacadeRep {
         }while(true);
 
         
-        if(fType == 1) showUser(this.filter,this.join, this.condition);
-        else showTeam(this.filter,this.join, this.condition);
+        String atribut = "";
+        ArrayList <String> filter = new ArrayList<>();
+        boolean bJoin = true;
+        if(this.filter == 1){
+            int limit = this.condition.length() - this.condition.replace(";", "").length();
+            String[] word = this.condition.split(";",limit+1);
+            atribut = word[0];
+            for (int i = 1; i < word.length; i++) filter.add(word[i]);
+        }
+        else atribut = this.condition;
+
+        if(this.join == 2) bJoin = false;
+
+        if(fType == 1) userRep.show(atribut,filter,bJoin,"team.csv","conn");
+        else teamRep.show(atribut,filter,bJoin,"user.csv","conn");
     }
 
     private void insertUser(){
@@ -96,19 +109,5 @@ public class FacadeRep {
         }while(teamRep.insert(this.inputName, 0, "", ""));
 
         System.out.println("Team created!");
-    }
-
-    private void showUser(int filter, int join, String condition){
-        do{
-            
-            
-        }while(true);
-    }
-
-    private void showTeam(int filter, int join, String condition){
-        do{
-            
-            
-        }while(true);
     }
 }
