@@ -19,7 +19,10 @@ public class UserRepository implements Repository{
                 TeamRepository tTemp = new TeamRepository();
                 boolean tem = tTemp.insert(teamName, 0, "","");
             }
-            else if(team.get(i).getNama().compareTo(teamName) == 0) break;
+            else if(team.get(i).getNama().compareTo(teamName) == 0) {
+                id = team.get(i).getId();
+                break;
+            }
         }
         for (Model m : model) {
             if(((User) m).getNim().compareTo(nim) == 0) {
