@@ -1,5 +1,6 @@
 package repository;
 
-public class Repository {
-    
+public interface Repository {
+    void insert();
+    void show();
 }
