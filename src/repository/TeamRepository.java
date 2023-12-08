@@ -106,8 +106,6 @@ public class TeamRepository implements Repository {
     @Override
     public Model findOne(String atribut, ArrayList<String> filter) {
         Connection connection = Connection.getConnection();
-        ArrayList<Model> temp = connection.readFile("user.csv");
-        ArrayList<Model> user = (ArrayList) temp.clone();
         ArrayList<Model> team = connection.readFile("team.csv");
         int n = 0;
 
