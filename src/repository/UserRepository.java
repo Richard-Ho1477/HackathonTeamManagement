@@ -18,6 +18,7 @@ public class UserRepository implements Repository{
             if(i+1 == team.size() && team.get(i).getNama().compareTo(teamName) != 0) {
                 TeamRepository tTemp = new TeamRepository();
                 boolean tem = tTemp.insert(teamName, 0, "","");
+                id = team.size() + 1;
             }
             else if(team.get(i).getNama().compareTo(teamName) == 0) {
                 id = team.get(i).getId();
@@ -37,12 +38,12 @@ public class UserRepository implements Repository{
             System.out.println("Team ini telah penuh, harap memilih team lain");
             return true;
         }
-        connection.updateFile("user.csv", new User(nama, model.size()+1, nim));
+        connection.updateFile("user.csv", new User(nama, id, nim));
         return false;
     }
 
     @Override
-    public void show(String atribut, ArrayList<String> filter, boolean join, String table, String con) {
+    public void find(String atribut, ArrayList<String> filter, boolean join, String table, String con) {
         Connection connection = Connection.getConnection();
         ArrayList<Model> temp = connection.readFile(table);
         ArrayList<Model> team = (ArrayList) temp.clone();
@@ -141,5 +142,72 @@ public class UserRepository implements Repository{
             System.out.println("Tidak ada atribut dalam tabel");
             return;
         }
+    }
+
+    @Override
+    public Model findOne(String atribut, ArrayList<String> filter) {
+        Connection connection = Connection.getConnection();
+        ArrayList<Model> temp = connection.readFile("team.csv");
+        ArrayList<Model> team = (ArrayList) temp.clone();
+        ArrayList<Model> user = connection.readFile("user.csv");
+        int n = 0;
+        
+        if(filter.size()==0) {
+            if(user.size() != 0) return user.get(0);
+            return null;
+        }
+
+        if(atribut.compareTo("name") == 0 || atribut.compareTo("nama") == 0) {
+            if(filter.get(0).compareTo("=") == 0) n = 1;
+            if(filter.get(0).compareTo("!=") == 0) n = 2;
+            if(n == 0) {
+                System.out.println("Operator yang dimasukkan salah, harap masukkan kembali");
+                return null;
+            }
+            for (Model u : user) {
+                for(int i = 1; i<filter.size(); i++) {
+                    if((n == 1 && u.getNama().compareTo(filter.get(i))==0) || (n == 2 && u.getNama().compareTo(filter.get(i))!=0)) {
+                        return u;
+                    }
+                }
+            }
+        } else if(atribut.compareTo("id") == 0) {
+            if(filter.get(0).compareTo("=") == 0) n = 1;
+            if(filter.get(0).compareTo("!=") == 0) n = 2;
+            if(filter.get(0).compareTo("<") == 0) n = 3;
+            if(filter.get(0).compareTo(">") == 0) n = 4;
+            if(filter.get(0).compareTo("<=") == 0 || filter.get(0).compareTo("=<") == 0) n = 5;
+            if(filter.get(0).compareTo(">=") == 0 || filter.get(0).compareTo(">=") == 0) n = 6;
+            if(n == 0) {
+                System.out.println("Operator yang dimasukkan salah, harap masukkan kembali");
+                return null;
+            }
+            for (Model u : user) {
+                for(int i = 1; i<filter.size(); i++) {
+                    if((n == 1 && u.getId() == Integer.valueOf(filter.get(i))) || (n == 2 && u.getId() != Integer.valueOf(filter.get(i))) || (n == 3 && u.getId() < Integer.valueOf(filter.get(i))) || (n == 4 && u.getId() > Integer.valueOf(filter.get(i))) || (n == 5 && u.getId() <= Integer.valueOf(filter.get(i))) || (n == 6 && u.getId() >= Integer.valueOf(filter.get(i)))) {
+                        return u;
+                    }
+                }
+            }
+        } else if(atribut.compareTo("nim") == 0) {
+            if(filter.get(0).compareTo("=") == 0) n = 1;
+            if(filter.get(0).compareTo("!=") == 0) n = 2;
+            if(n == 0) {
+                System.out.println("Operator yang dimasukkan salah, harap masukkan kembali");
+                return null;
+            }
+            for (Model u : user) {
+                for(int i = 1; i<filter.size(); i++) {
+                    if((n == 1 && ((User) u).getNim().compareTo(filter.get(i))==0) || (n == 2 && ((User) u).getNim().compareTo(filter.get(i))!=0)) {
+                        return u;
+                    }
+                }
+            }
+        } else {
+            System.out.println("Tidak ada atribut dalam tabel");
+            return null;
+        }
+
+        return null;
     }
 }

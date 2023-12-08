@@ -3,6 +3,8 @@ package repository;
 import java.util.ArrayList;
 import java.util.Scanner;
 
+import models.Model;
+
 public class FacadeRep {
     private TeamRepository teamRep;
     private UserRepository userRep;
@@ -40,20 +42,22 @@ public class FacadeRep {
             }
             sc.nextLine();
         }while(this.join != 1 && this.join != 2);
-        do{
-            if(this.filter == 1)System.out.println("Add codition. Seperate filter by semicolon.");
-            else System.out.println("Add codition.");
-            try {
-                this.condition = sc.nextLine();
-            } catch (Exception e) {
-                System.out.println(e);
-                sc.nextLine();
-            }
-            int limit = this.condition.length() - this.condition.replace(";", "").length();
-            String[] word = this.condition.split(";",limit+1);
-            if(this.filter == 1 && word.length > 1 && this.condition.charAt(this.condition.length() - 1) != ';') break;
-            else if(this.filter == 2 && !this.condition.contains(";")) break;
-        }while(true);
+        if(this.filter == 1){
+            do{
+                System.out.println("Add codition. Seperate filter by semicolon.");
+                try {
+                    this.condition = sc.nextLine();
+                } catch (Exception e) {
+                    System.out.println(e);
+                    sc.nextLine();
+                }
+                int limit = this.condition.length() - this.condition.replace(";", "").length();
+                String[] word = this.condition.split(";",limit+1);
+                if(this.filter == 1 && word.length > 1 && this.condition.charAt(this.condition.length() - 1) != ';') break;
+                else if(this.filter == 2 && !this.condition.contains(";")) break;
+            }while(true);
+        }
+        
         
         String atribut = "";
         ArrayList <String> filter = new ArrayList<>();
@@ -64,12 +68,11 @@ public class FacadeRep {
             atribut = word[0];
             for (int i = 1; i < word.length; i++) filter.add(word[i]);
         }
-        else atribut = this.condition;
 
         if(this.join == 2) bJoin = false;
 
-        if(fType == 1) userRep.show(atribut,filter,bJoin,"team.csv","conn");
-        else teamRep.show(atribut,filter,bJoin,"user.csv","conn");
+        if(fType == 1) userRep.find(atribut,filter,bJoin,"team.csv","conn");
+        else teamRep.find(atribut,filter,bJoin,"user.csv","conn");
     }
 
     private void insertUser(){
@@ -108,5 +111,45 @@ public class FacadeRep {
         }while(teamRep.insert(this.inputName, 0, "", ""));
 
         System.out.println("Team created!");
+    }
+
+    public Model findOne(int fType){
+        do{
+            System.out.println("Want to filter by condition? 1. Yes, 2. No");
+            try {
+                this.filter = sc.nextInt();
+            } catch (Exception e) {
+                System.out.println(e);
+            }
+            sc.nextLine();
+        }while(this.filter != 1 && this.filter != 2);
+        if(this.filter == 1){
+            do{
+                System.out.println("Add codition. Seperate filter by semicolon.");
+                try {
+                    this.condition = sc.nextLine();
+                } catch (Exception e) {
+                    System.out.println(e);
+                    sc.nextLine();
+                }
+                int limit = this.condition.length() - this.condition.replace(";", "").length();
+                String[] word = this.condition.split(";",limit+1);
+                if(this.filter == 1 && word.length > 1 && this.condition.charAt(this.condition.length() - 1) != ';') break;
+                else if(this.filter == 2 && !this.condition.contains(";")) break;
+            }while(true);
+        }
+        
+        
+        String atribut = "";
+        ArrayList <String> filter = new ArrayList<>();
+        if(this.filter == 1){
+            int limit = this.condition.length() - this.condition.replace(";", "").length();
+            String[] word = this.condition.split(";",limit+1);
+            atribut = word[0];
+            for (int i = 1; i < word.length; i++) filter.add(word[i]);
+        }
+
+        if(fType == 1) return userRep.findOne(atribut,filter);
+        else return teamRep.findOne(atribut,filter);
     }
 }
